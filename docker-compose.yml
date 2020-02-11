@@ -31,7 +31,7 @@ services:
     user: root
     privileged: true
     volumes:
-      - $HOME/docker-volume/jenkins-data:/var/jenkins_home
+      - /opt/jenkins_home:/var/jenkins_home
       - /var/run/docker.sock:/var/run/docker.sock
       - /usr/bin/docker:/usr/bin/docker
     container_name: simplepay-ci-container
@@ -69,14 +69,7 @@ services:
   sonar-server:
     image: sonarqube:lts
     container_name: simplepay-ccq-server-container
-    privileged: true
-    volumes:
-      - $SONARQUBE_HOME/sonarqube_conf:/opt/sonarqube/conf
-      - $SONARQUBE_HOME/sonarqube_extensions:/opt/sonarqube/extensions
-      - $SONARQUBE_HOME/sonarqube_logs:/opt/sonarqube/logs
-      - $SONARQUBE_HOME/sonarqube_data:/opt/sonarqube/data
     environment:
-      SONARQUBE_HOME: $HOME/docker-volume/sonarqube
       sonar.jdbc.username: ${SONAR_DB_USER_NAME}
       sonar.jdbc.password: ${SONAR_DB_USER_PASS}
       sonar.jdbc.url: "jdbc:postgresql://172.18.0.4/${SONAR_DB_NAME}"

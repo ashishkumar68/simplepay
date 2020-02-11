@@ -5,6 +5,9 @@ pipeline {
             args '--network=simplepay-net --ip=172.18.0.6'
         }
     }
+    triggers {
+        githubPush()
+    }
     stages {
         stage('build') {
             steps {
