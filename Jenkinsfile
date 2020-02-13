@@ -57,7 +57,7 @@ pipeline {
     }
     post {
         always {
-            sh 'echo Github Webhook check 7'
+            sh 'echo Github Webhook check 8'
             withCredentials([string(credentialsId: 'mysql_test_db_pass', variable: 'DB_PASS')]) {
                 sh 'mysql -h 172.18.0.2 -u root -p$DB_PASS -e "drop database simplepay;"'
             }
