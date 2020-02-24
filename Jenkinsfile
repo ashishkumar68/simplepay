@@ -11,6 +11,11 @@ pipeline {
     stages {
         stage('build') {
             steps {
+                emailext (
+                    subject: "STARTED: Job '${env.JOB_NAME} [${env.BUILD_NUMBER}]'",
+                    body: """<p>STARTED: Job '${env.JOB_NAME} [${env.BUILD_NUMBER}]':</p><p>Check console output at &QUOT;<a href='${env.BUILD_URL}'>${env.JOB_NAME} [${env.BUILD_NUMBER}]</a>&QUOT;</p>""",
+                    recipientProviders: [[$class: 'DevelopersRecipientProvider']]
+                )
                 withCredentials([string(credentialsId: 'simple_pay_ashish_token', variable: 'TOKEN')]) {
                     sh "curl -XPOST -H 'Authorization: token $TOKEN' https://api.github.com/repos/ashishkumar68/simplepay/statuses/\$(git rev-parse HEAD) -d '{\"state\":\"pending\",\"target_url\":\"${BUILD_URL}\",\"description\": \"The build is pending\"}'"
                 }
@@ -66,11 +71,21 @@ pipeline {
             withCredentials([string(credentialsId: 'simple_pay_ashish_token', variable: 'TOKEN')]) {
                 sh "curl -XPOST -H 'Authorization: token $TOKEN' https://api.github.com/repos/ashishkumar68/simplepay/statuses/\$(git rev-parse HEAD) -d '{\"state\":\"success\",\"target_url\":\"${BUILD_URL}\",\"description\": \"The build succeeded\"}'"
             }
+            emailext (
+                subject: "SUCCESSFUL: Job '${env.JOB_NAME} [${env.BUILD_NUMBER}]'",
+                body: """<p>SUCCESSFUL: Job '${env.JOB_NAME} [${env.BUILD_NUMBER}]':</p><p>Check console output at &QUOT;<a href='${env.BUILD_URL}'>${env.JOB_NAME} [${env.BUILD_NUMBER}]</a>&QUOT;</p>""",
+                recipientProviders: [[$class: 'DevelopersRecipientProvider']]
+            )
         }
         failure {
             withCredentials([string(credentialsId: 'simple_pay_ashish_token', variable: 'TOKEN')]) {
                 sh "curl -XPOST -H 'Authorization: token $TOKEN' https://api.github.com/repos/ashishkumar68/simplepay/statuses/\$(git rev-parse HEAD) -d '{\"state\":\"failure\",\"target_url\":\"${BUILD_URL}\",\"description\": \"The build failed\"}'"
             }
+            emailext (
+                subject: "FAILED: Job '${env.JOB_NAME} [${env.BUILD_NUMBER}]'",
+                body: """<p>FAILED: Job '${env.JOB_NAME} [${env.BUILD_NUMBER}]':</p><p>Check console output at &QUOT;<a href='${env.BUILD_URL}'>${env.JOB_NAME} [${env.BUILD_NUMBER}]</a>&QUOT;</p>""",
+                recipientProviders: [[$class: 'DevelopersRecipientProvider']]
+            )
         }
     }
 }
